@@ -1,7 +1,7 @@
 
 $NEWHost = "ESXi_Server.lab.local"
 
-# start SSH servíce
+# start SSH service
 Get-VMHost -Name $NEWHost | Foreach
 {
 	Start-VMHostService -HostService ($_ | Get-VMHostService | Where { $_.Key -eq "TSM-SSH" })
