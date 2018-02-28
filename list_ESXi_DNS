@@ -1,0 +1,4 @@
+$esx="esxihost.lab","esxihost2.lab"
+foreach ($esxi in $esx) {
+Get-VMHostNetwork -VMHost $esxi |Select HostName,DomainName,DnsAddress
+}
