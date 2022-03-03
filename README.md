@@ -1,1 +1,1 @@
-# vSphere6_scripts
+# vSphere_scripts
