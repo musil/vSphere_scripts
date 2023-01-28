@@ -1,6 +1,5 @@
 # vSphere_scripts
 
-
 ## Alarm SSH enabled on ESXi
 
 ## Alarm ESXi shell enabled
