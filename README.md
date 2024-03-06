@@ -2,7 +2,7 @@
 
 ## ESXi hosts
 
-### Description
+### ESXi Description
 
 [ESXi](./ESXi) folder contains scripts for managing ESXi hosts.
 
@@ -11,7 +11,7 @@
 
 ## vCenter
 
-### Description
+### vCenter Description
 
 [vCenter](./vCenter) folder contains scripts for managing vCenter.
 
@@ -20,7 +20,7 @@
 
 ## Virtual Machines
 
-### Description
+### VM Description
 
 [VM](./VM) folder contains scripts for managing virtual machines.
 
