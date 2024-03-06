@@ -1,14 +1,32 @@
-# vSphere_scripts
+# vSphere scripts collection
 
+## ESXi hosts
 
-## Alarm SSH enabled on ESXi
+### Description
 
-## Alarm ESXi shell enabled
+[ESXi](./ESXi) folder contains scripts for managing ESXi hosts.
 
-## Set Execution policy 
+* List ESXi DNS servers
+* start/stop SSH service on ESXi
 
-## List ESXi DNS servers
+## vCenter
 
-## start/stop SSH service on ESXi
+### Description
 
-## VM boot delay to 7sec. 
+[vCenter](./vCenter) folder contains scripts for managing vCenter.
+
+* Alarm SSH enabled on ESXi
+* Alarm ESXi shell enabled
+
+## Virtual Machines
+
+### Description
+
+[VM](./VM) folder contains scripts for managing virtual machines.
+
+* VM boot delay to 7sec.
+
+## Powershell & PowerCLI environment
+
+* Set Execution policy
+* Install PowerCLI
