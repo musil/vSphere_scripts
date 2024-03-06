@@ -25,6 +25,7 @@
 [VM](./VM) folder contains scripts for managing virtual machines.
 
 * VM boot delay to 7sec.
+* Find VM with specific MAC address
 
 ## Powershell & PowerCLI environment
 
