@@ -1,5 +1,17 @@
 # vSphere scripts collection
 
+## Description
+
+This repository contains scripts for managing vSphere environment.
+
+## Requirements
+
+* You need to have PowerShell installed on your machine.
+* You need to have PowerCLI installed on your machine to run these scripts.
+* You need to have access to vCenter or ESXi host.
+* You need to have permissions to run these scripts.
+* You need to be connected to vCenter or ESXi host.
+
 ## ESXi hosts
 
 ### ESXi Description
@@ -17,6 +29,7 @@
 
 * Alarm SSH enabled on ESXi
 * Alarm ESXi shell enabled
+* Get full vCenter version, release date etc.
 
 ## Virtual Machines
 
