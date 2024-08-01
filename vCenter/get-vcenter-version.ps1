@@ -94,6 +94,13 @@ Function Get-vCenterVersion {
         ($vCenterServerVersion,$vCenterReleaseDate,$vCenterVersionFull,$VAM,$vCenterMobVersion) = $vCenterVersionMappings[$vCenterServerBuild].split(",")
     }
 
+    
+# Convert the keys to integers and sort them
+$sortedKeys = $vCenterVersionMappings.Keys | ForEach-Object { [int]$_ } | Sort-Object
+
+# Get the greatest number
+$greatestKey = $sortedKeys[-1]
+
     $out = [pscustomobject] @{
         vCenter_Name = $vCenterName;
         vCenter_Build = $vCenterServerBuild;
@@ -102,6 +109,16 @@ Function Get-vCenterVersion {
         vCenter_VAMI = $VAMI;
         vCenter_Version_Full = $vCenterVersionFull;
         Release_Date = $vCenterReleaseDate;
+
     }
     $out
-    }
+# Compare $vCenterServerBuild with $greatestKey
+if ($vCenterServerBuild -lt $greatestKey) {
+    Write-Host "vCenter upgrade possible. `n" -ForegroundColor Red
+} elseif ($vCenterServerBuild -eq $greatestKey) {
+    Write-Host "Latest version/ up to date. `n" -ForegroundColor Green
+} else {
+    Write-Host "Update this script, looks like it's outdated. `n"  -ForegroundColor Magenta
+}
+
+}
