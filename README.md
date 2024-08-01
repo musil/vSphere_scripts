@@ -31,6 +31,8 @@ This repository contains scripts for managing vSphere environment.
 * Alarm ESXi shell enabled
 * Get full vCenter version, release date etc.
 
+![vCenter version](./vCenter/vCenterVersion.png)
+
 ## Virtual Machines
 
 ### VM Description
