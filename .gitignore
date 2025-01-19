@@ -1,3 +1,6 @@
 *.xlsx
 .DS_Store
 ideas.md
+.env.ps1
+.env
+
