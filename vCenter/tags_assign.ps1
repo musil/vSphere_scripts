@@ -1,5 +1,5 @@
 # Connect to your vCenter server (if not already connected)
-# Connect-VIServer -Server your_vcenter_server
+# Connect-VIServer -Server <VCENTER_IP_OR_FQDN>
 
 # Specify the name of the VM to tag and the tag name
 $vmName = "Your_VM_Name"    # Replace with the actual VM name
