@@ -4,3 +4,6 @@ ideas.md
 .env.ps1
 .env
 
+# HOMELAB FILES
+tags_create_from_file.txt
+tags_assign_from_file.csv
