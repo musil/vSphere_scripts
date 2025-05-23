@@ -89,6 +89,7 @@ Function Get-vCenterVersion {
             "24322831"="vCenter Server 8.0 Update 3d","21.10.2024","8.0.3.00400","24322831","24322831"
             "24614210"="vCenter Server 7.0 Update 3u","1.4.2025","7.0.3.02300","24614210","24614210"
             "24674346"="vCenter Server 8.0 Update 3e","11.4.2025","8.0.3.00500","24674346","24674346"
+            "24730281"="vCenter Server 7.0 Update 3v","20.5.2025","7.0.3.02400","24730281","24730281"
         }
 
         $vCenterServerVersion = $vCenterServer.Version
