@@ -8,7 +8,7 @@ Function Get-vCenterVersion {
     File Name      : get-vcenter-version.ps1
     Author         : Stanislav Musil
     Prerequisite   : PowerShell
-    Website        : https://vpxd.dc5.cz/index.php/category/blog/
+    Website        : https://vpxd.dc5.cz/
     X (Twitter)    : https://www.x.com/stmusil
 
     .DESCRIPTION
@@ -95,6 +95,7 @@ Function Get-vCenterVersion {
             "24957454"="vCenter Server 9.0.1.0","29.9.2025","9.0.1.0","24957454","24957454"
             "24927011"="vCenter Server 7.0 Update 3w","29.9.2025","7.0.3.02500","24927011","24927011"
             "25092719"="vCenter Server 8.0 Update 3h","15.12.2025","8.0.3.00700","25092719","25092719"
+            "25148086"="vCenter Server 9.0.2.0","20.1.2026","9.0.2.0","25148086","25148086"
         }
 
         $vCenterServerVersion = $vCenterServer.Version
