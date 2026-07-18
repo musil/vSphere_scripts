@@ -125,6 +125,10 @@ unset SSO_BIND_PASSWORD
 
 ## Output
 
+Example output from a VCF 9 / vCenter SSO environment:
+
+![sso-users output example](sso-users.png)
+
 Default table columns:
 
 | Column | Description |
