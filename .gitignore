@@ -7,3 +7,6 @@ ideas.md
 # HOMELAB FILES
 tags_create_from_file.txt
 tags_assign_from_file.csv
+
+# Go build output
+/apps/sso-users/sso-users
