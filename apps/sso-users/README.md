@@ -59,7 +59,7 @@ Show the application version:
 ./sso-users -version
 ```
 
-## Usage
+## CLI Usage
 
 Prompt for the password interactively:
 
@@ -91,6 +91,50 @@ Output JSON:
 ./sso-users -server vcsa.example.local -insecure -json
 ```
 
+The JSON output is intentionally stable because the HTTP API uses the same record structure.
+
+## HTTP Server Usage
+
+Run the HTTP server:
+
+```bash
+./sso-users serve \
+	--server vcsa.example.local \
+	--insecure \
+	--listen :8080 \
+	--apikey secret
+```
+
+The server runs until it is stopped. It uses the same LDAP connection flags and password handling as the CLI mode, then exposes the data through HTTP.
+
+To avoid putting the LDAP bind password in shell history, prefer `SSO_BIND_PASSWORD`:
+
+```bash
+export SSO_BIND_PASSWORD='your-temporary-password'
+./sso-users serve \
+	--server vcsa.example.local \
+	--insecure \
+	--listen :8080 \
+	--apikey secret
+unset SSO_BIND_PASSWORD
+```
+
+Health check:
+
+```bash
+curl http://localhost:8080/health
+```
+
+Authenticated users endpoint:
+
+```bash
+curl \
+	-H "Authorization: Bearer secret" \
+	http://localhost:8080/api/v1/users
+```
+
+`/api/v1/users` returns the same JSON fields and formatting as the CLI JSON output.
+
 ## Password Handling
 
 Password sources are evaluated in this order:
@@ -109,7 +153,7 @@ export SSO_BIND_PASSWORD='your-temporary-password'
 unset SSO_BIND_PASSWORD
 ```
 
-## Flags
+## CLI Flags
 
 | Flag | Default | Description |
 | --- | --- | --- |
@@ -122,6 +166,66 @@ unset SSO_BIND_PASSWORD
 | `-csv` | empty | Export results to CSV |
 | `-json` | `false` | Print JSON instead of a table |
 | `-version` | `false` | Print version and exit |
+
+## HTTP Server Flags
+
+Use `./sso-users serve` with these server-specific flags:
+
+| Flag | Default | Description |
+| --- | --- | --- |
+| `-listen` | `:8080` | HTTP listen address and port |
+| `-apikey` | required | API key required in `Authorization: Bearer <apikey>` |
+
+The `serve` command also accepts the same LDAP flags as CLI mode: `-server`, `-port`, `-domain`, `-user`, `-password`, and `-insecure`.
+
+Go's standard flag parser accepts both single-dash and double-dash forms, so `-apikey secret` and `--apikey secret` are equivalent.
+
+## HTTP API
+
+### GET /health
+
+Does not require authentication. Returns HTTP 200:
+
+```json
+{"status":"ok"}
+```
+
+Response headers include:
+
+```text
+Content-Type: application/json
+```
+
+### GET /api/v1/users
+
+Requires:
+
+```text
+Authorization: Bearer <apikey>
+```
+
+On success, returns HTTP 200 with `Content-Type: application/json` and the same JSON as CLI mode with `-json`:
+
+```bash
+./sso-users -server vcsa.example.local -insecure -json
+```
+
+The endpoint does not add or remove fields. It uses the same business logic as the CLI, so LDAP lookup behavior, password expiry calculation, and bind fallback are shared.
+
+### HTTP Status Codes
+
+| Endpoint | Condition | Status |
+| --- | --- | --- |
+| `/health` | Health check succeeds | `200 OK` |
+| `/api/v1/users` | API key is missing or invalid | `401 Unauthorized` |
+| `/api/v1/users` | LDAP lookup fails | `500 Internal Server Error` |
+| Any other path | Endpoint does not exist | `404 Not Found` |
+
+### Logging
+
+The HTTP server logs startup, incoming requests, HTTP status codes, request duration, and LDAP/read errors through Go's standard `log` package.
+
+It does not log API keys, `Authorization` headers, or LDAP bind passwords.
 
 ## Output
 
@@ -205,6 +309,7 @@ If your environment stores local users elsewhere, adjust the search base in `rea
 - Do not commit `.env` files or credentials. The repository ignores `.env` files.
 - Prefer short-lived or temporary credentials for testing.
 - Rotate any password that was pasted into chat, terminal history, or logs.
+- The HTTP server logs requests and statuses, but does not log API keys, Authorization headers, or LDAP passwords.
 - `-insecure` disables TLS certificate validation; use it only for trusted internal environments.
 
 ## Versioning
