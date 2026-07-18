@@ -12,6 +12,7 @@
 package main
 
 import (
+	"context"
 	"crypto/tls"
 	_ "embed"
 	"encoding/csv"
@@ -51,7 +52,24 @@ type userRecord struct {
 	Expired              bool       `json:"expired"`
 }
 
+type Config struct {
+	Server   string
+	Port     int
+	Domain   string
+	BindUser string
+	Password string
+	Insecure bool
+}
+
 func main() {
+	if len(os.Args) > 1 && os.Args[1] == "serve" {
+		if err := runServe(os.Args[2:]); err != nil {
+			fmt.Fprintf(os.Stderr, "error: %v\n", err)
+			os.Exit(1)
+		}
+		return
+	}
+
 	var (
 		server   = flag.String("server", "", "vCenter/PSC host running vmdir (required)")
 		port     = flag.Int("port", 636, "LDAPS port")
@@ -82,29 +100,17 @@ func main() {
 		os.Exit(1)
 	}
 
-	baseDN := domainToDN(*domain)
-
-	conn, err := dial(*server, *port, *insecure)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "error: connect: %v\n", err)
-		os.Exit(1)
+	cfg := Config{
+		Server:   *server,
+		Port:     *port,
+		Domain:   *domain,
+		BindUser: *bindUser,
+		Password: pw,
+		Insecure: *insecure,
 	}
-	defer conn.Close()
-
-	if err := bindSSO(conn, *bindUser, pw, baseDN); err != nil {
-		fmt.Fprintf(os.Stderr, "error: bind as %q failed: %v\n", *bindUser, err)
-		os.Exit(1)
-	}
-
-	lifetimeDays, err := readPasswordLifetimeDays(conn, baseDN)
+	records, err := GetUsers(context.Background(), cfg)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "error: read password policy: %v\n", err)
-		os.Exit(1)
-	}
-
-	records, err := readUsers(conn, baseDN, lifetimeDays)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "error: read users: %v\n", err)
+		fmt.Fprintf(os.Stderr, "error: %v\n", err)
 		os.Exit(1)
 	}
 
@@ -156,6 +162,47 @@ func resolvePassword(flagValue string) (string, error) {
 		return "", fmt.Errorf("read password: %w", err)
 	}
 	return string(b), nil
+}
+
+func GetUsers(ctx context.Context, cfg Config) ([]userRecord, error) {
+	if err := ctx.Err(); err != nil {
+		return nil, err
+	}
+
+	baseDN := domainToDN(cfg.Domain)
+
+	conn, err := dial(cfg.Server, cfg.Port, cfg.Insecure)
+	if err != nil {
+		return nil, fmt.Errorf("connect: %w", err)
+	}
+	defer conn.Close()
+
+	if err := ctx.Err(); err != nil {
+		return nil, err
+	}
+
+	if err := bindSSO(conn, cfg.BindUser, cfg.Password, baseDN); err != nil {
+		return nil, fmt.Errorf("bind as %q failed: %w", cfg.BindUser, err)
+	}
+
+	if err := ctx.Err(); err != nil {
+		return nil, err
+	}
+
+	lifetimeDays, err := readPasswordLifetimeDays(conn, baseDN)
+	if err != nil {
+		return nil, fmt.Errorf("read password policy: %w", err)
+	}
+
+	if err := ctx.Err(); err != nil {
+		return nil, err
+	}
+
+	records, err := readUsers(conn, baseDN, lifetimeDays)
+	if err != nil {
+		return nil, fmt.Errorf("read users: %w", err)
+	}
+	return records, nil
 }
 
 func dial(host string, port int, insecure bool) (*ldap.Conn, error) {

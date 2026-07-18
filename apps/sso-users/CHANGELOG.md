@@ -6,9 +6,15 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## [Unreleased]
 
-### Added - Unreleased
+## [0.2.0] - 2026-07-18
+
+### Added - 0.2.0
 
 - Version guard workflow to make code changes require both `VERSION` and `CHANGELOG.md` updates.
+- HTTP server mode through `sso-users serve`.
+- Unauthenticated `GET /health` endpoint for monitoring.
+- Authenticated `GET /api/v1/users` endpoint returning the same JSON shape as CLI `-json` output.
+- Shared `GetUsers` business logic used by both CLI and HTTP API modes.
 
 ## [0.1.0] - 2026-07-18
 
