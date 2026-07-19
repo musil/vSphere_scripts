@@ -6,6 +6,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## [Unreleased]
 
+## [0.3.2] - 2026-07-19
+
+### Fixed - 0.3.2
+
+- Windows release archive is created by a dedicated `go run` helper (`scripts/zipfile.go`) because `go run /dev/stdin` fails in Go module mode on CI runners.
+
 ## [0.3.1] - 2026-07-19
 
 ### Fixed - 0.3.1

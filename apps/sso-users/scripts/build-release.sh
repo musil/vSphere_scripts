@@ -27,79 +27,12 @@ build() {
 		go build -trimpath -ldflags="-s -w" -o "${dist}/${binary}" .
 
 	if [[ "$goos" == "windows" ]]; then
-		zip_file "$dist" "${package}.zip" "$binary"
+		go run ./scripts/zipfile.go "${dist}/${package}.zip" "${dist}/${binary}" "$binary"
 	else
 		tar -C "$dist" -czf "${dist}/${package}.tar.gz" "$binary"
 	fi
 
 	rm "${dist}/${binary}"
-}
-
-zip_file() {
-	local dir="$1"
-	local archive="$2"
-	local binary="$3"
-
-	if command -v zip >/dev/null 2>&1; then
-		(
-			cd "$dir"
-			zip -q "$archive" "$binary"
-		)
-		return
-	fi
-
-	(
-		cd "$dir"
-		go run /dev/stdin "$archive" "$binary" <<'EOF'
-package main
-
-import (
-	"archive/zip"
-	"io"
-	"os"
-)
-
-func main() {
-	archivePath := os.Args[1]
-	binaryPath := os.Args[2]
-
-	archive, err := os.Create(archivePath)
-	if err != nil {
-		panic(err)
-	}
-	defer archive.Close()
-
-	writer := zip.NewWriter(archive)
-	defer writer.Close()
-
-	file, err := os.Open(binaryPath)
-	if err != nil {
-		panic(err)
-	}
-	defer file.Close()
-
-	info, err := file.Stat()
-	if err != nil {
-		panic(err)
-	}
-
-	header, err := zip.FileInfoHeader(info)
-	if err != nil {
-		panic(err)
-	}
-	header.Name = binaryPath
-	header.Method = zip.Deflate
-
-	entry, err := writer.CreateHeader(header)
-	if err != nil {
-		panic(err)
-	}
-	if _, err := io.Copy(entry, file); err != nil {
-		panic(err)
-	}
-}
-EOF
-	)
 }
 
 checksum() {
