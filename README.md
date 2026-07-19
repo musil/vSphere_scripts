@@ -33,6 +33,12 @@ This repository contains scripts for managing vSphere environment.
 * Get full vCenter version, release date etc.
 ![vCenter version](./vCenter/vCenterVersion.png)
 
+## Applications
+
+### sso-users
+
+* [sso-users](apps/sso-users/README.md) is a Go CLI and HTTP API for listing vCenter SSO users and password expiry information from vmdir over LDAPS.
+
 ## Virtual Machines
 
 ### VM Description

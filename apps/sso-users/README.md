@@ -105,7 +105,7 @@ Run the HTTP server:
 	--apikey secret
 ```
 
-The server runs until it is stopped. It uses the same LDAP connection flags and password handling as the CLI mode, then exposes the data through HTTP.
+The server runs until it is stopped. It uses the same LDAP connection flags and password handling as the CLI mode, then exposes the data through HTTP. Startup fails when `-server` or `-apikey` is missing.
 
 To avoid putting the LDAP bind password in shell history, prefer `SSO_BIND_PASSWORD`:
 
@@ -210,7 +210,9 @@ On success, returns HTTP 200 with `Content-Type: application/json` and the same 
 ./sso-users -server vcsa.example.local -insecure -json
 ```
 
-The endpoint does not add or remove fields. It uses the same business logic as the CLI, so LDAP lookup behavior, password expiry calculation, and bind fallback are shared.
+The endpoint does not add or remove fields. It uses the same business logic as the CLI, so LDAP lookup behavior, password expiry calculation, and bind fallback are shared. Each authenticated request reads current data from vmdir.
+
+Only `GET` is implemented for the HTTP API. Unsupported methods are returned as `404 Not Found`.
 
 ### HTTP Status Codes
 
@@ -219,7 +221,7 @@ The endpoint does not add or remove fields. It uses the same business logic as t
 | `/health` | Health check succeeds | `200 OK` |
 | `/api/v1/users` | API key is missing or invalid | `401 Unauthorized` |
 | `/api/v1/users` | LDAP lookup fails | `500 Internal Server Error` |
-| Any other path | Endpoint does not exist | `404 Not Found` |
+| Any other path or unsupported method | Endpoint or method is not served | `404 Not Found` |
 
 ### Logging
 
