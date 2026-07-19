@@ -1,6 +1,7 @@
 APP := sso-users
+VERSION := $(shell cat VERSION)
 
-.PHONY: build clean check check-version test version
+.PHONY: build clean check check-version release test version
 
 build:
 	go build -o $(APP) .
@@ -12,6 +13,9 @@ check: test build check-version
 
 check-version:
 	bash ./scripts/check-version.sh
+
+release:
+	bash ./scripts/build-release.sh $(VERSION)
 
 test:
 	go test ./...

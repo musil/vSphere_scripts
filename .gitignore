@@ -10,3 +10,4 @@ tags_assign_from_file.csv
 
 # Go build output
 /apps/sso-users/sso-users
+/apps/sso-users/dist/

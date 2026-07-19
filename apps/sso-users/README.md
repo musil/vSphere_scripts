@@ -59,6 +59,36 @@ Show the application version:
 ./sso-users -version
 ```
 
+## Release Builds
+
+Prebuilt binaries are produced by GitLab CI when a tag matching `sso-users/vX.Y.Z` is pushed.
+
+Supported release targets:
+
+| OS | Architecture | Archive |
+| --- | --- | --- |
+| macOS | `arm64` | `sso-users_X.Y.Z_darwin_arm64.tar.gz` |
+| Linux | `amd64` | `sso-users_X.Y.Z_linux_amd64.tar.gz` |
+| Windows | `amd64` | `sso-users_X.Y.Z_windows_amd64.zip` |
+
+The release also includes `checksums.txt` with SHA256 checksums.
+
+Create a release from this repository root:
+
+```bash
+version="$(cat apps/sso-users/VERSION)"
+git tag "sso-users/v${version}"
+git push origin "sso-users/v${version}"
+```
+
+Build the same release archives locally:
+
+```bash
+make release
+```
+
+Release archives are written to `apps/sso-users/dist/`. The `dist/` directory and compiled binaries are build artifacts and should not be committed.
+
 ## CLI Usage
 
 Prompt for the password interactively:
