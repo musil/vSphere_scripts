@@ -32,8 +32,6 @@ sso-users:release-build:
   needs:
     - job: sso-users:test
   script:
-    - apt-get update
-    - apt-get install -y --no-install-recommends zip
     - cd "$SSO_USERS_APP_DIR"
     - VERSION="${CI_COMMIT_TAG#sso-users/v}"
     - test "$(cat VERSION)" = "$VERSION" || { echo "VERSION must match tag ${CI_COMMIT_TAG}" >&2; exit 1; }
@@ -48,7 +46,6 @@ sso-users:release-build:
     expire_in: never
 
 sso-users:release:
-  image: registry.gitlab.com/gitlab-org/release-cli:latest
   stage: release
   rules:
     - if: '$CI_COMMIT_TAG =~ /^sso-users\/v[0-9]+\.[0-9]+\.[0-9]+$/'
@@ -56,22 +53,25 @@ sso-users:release:
     - job: sso-users:release-build
       artifacts: true
   script:
-    - echo "Creating GitLab release for ${CI_COMMIT_TAG}"
-  release:
-    tag_name: "$CI_COMMIT_TAG"
-    name: "sso-users $SSO_USERS_VERSION"
-    description: "Prebuilt sso-users binaries for darwin/arm64, linux/amd64, and windows/amd64. Verify downloads with checksums.txt."
-    assets:
-      links:
-        - name: "sso-users_${SSO_USERS_VERSION}_darwin_arm64.tar.gz"
-          url: "${SSO_USERS_ARTIFACT_BASE_URL}/sso-users_${SSO_USERS_VERSION}_darwin_arm64.tar.gz"
-          link_type: package
-        - name: "sso-users_${SSO_USERS_VERSION}_linux_amd64.tar.gz"
-          url: "${SSO_USERS_ARTIFACT_BASE_URL}/sso-users_${SSO_USERS_VERSION}_linux_amd64.tar.gz"
-          link_type: package
-        - name: "sso-users_${SSO_USERS_VERSION}_windows_amd64.zip"
-          url: "${SSO_USERS_ARTIFACT_BASE_URL}/sso-users_${SSO_USERS_VERSION}_windows_amd64.zip"
-          link_type: package
-        - name: "checksums.txt"
-          url: "${SSO_USERS_ARTIFACT_BASE_URL}/checksums.txt"
-          link_type: other
+    - |
+      set -euo pipefail
+      release_url="${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/releases"
+      description="Prebuilt sso-users binaries for darwin/arm64, linux/amd64, and windows/amd64. Verify downloads with checksums.txt."
+      curl --fail --request POST \
+        --header "JOB-TOKEN: ${CI_JOB_TOKEN}" \
+        --data-urlencode "name=sso-users ${SSO_USERS_VERSION}" \
+        --data-urlencode "tag_name=${CI_COMMIT_TAG}" \
+        --data-urlencode "description=${description}" \
+        --data-urlencode "assets[links][][name]=sso-users_${SSO_USERS_VERSION}_darwin_arm64.tar.gz" \
+        --data-urlencode "assets[links][][url]=${SSO_USERS_ARTIFACT_BASE_URL}/sso-users_${SSO_USERS_VERSION}_darwin_arm64.tar.gz" \
+        --data-urlencode "assets[links][][link_type]=package" \
+        --data-urlencode "assets[links][][name]=sso-users_${SSO_USERS_VERSION}_linux_amd64.tar.gz" \
+        --data-urlencode "assets[links][][url]=${SSO_USERS_ARTIFACT_BASE_URL}/sso-users_${SSO_USERS_VERSION}_linux_amd64.tar.gz" \
+        --data-urlencode "assets[links][][link_type]=package" \
+        --data-urlencode "assets[links][][name]=sso-users_${SSO_USERS_VERSION}_windows_amd64.zip" \
+        --data-urlencode "assets[links][][url]=${SSO_USERS_ARTIFACT_BASE_URL}/sso-users_${SSO_USERS_VERSION}_windows_amd64.zip" \
+        --data-urlencode "assets[links][][link_type]=package" \
+        --data-urlencode "assets[links][][name]=checksums.txt" \
+        --data-urlencode "assets[links][][url]=${SSO_USERS_ARTIFACT_BASE_URL}/checksums.txt" \
+        --data-urlencode "assets[links][][link_type]=other" \
+        "$release_url"

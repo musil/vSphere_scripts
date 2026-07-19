@@ -6,6 +6,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## [Unreleased]
 
+## [0.3.1] - 2026-07-19
+
+### Fixed - 0.3.1
+
+- Release workflow no longer depends on `apt-get`, a system `zip` package, or a Docker-only `release-cli` image, so it works on shell runners such as Rocky Linux.
+
 ## [0.3.0] - 2026-07-19
 
 ### Added - 0.3.0
